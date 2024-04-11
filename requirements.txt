@@ -5,4 +5,3 @@ pandas==2.2.1
 pillow==10.3.0
 ultralytics==8.1.45
 tokenizers==0.15.2
-libgl1-mesa-glx
