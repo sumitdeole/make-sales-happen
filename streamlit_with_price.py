@@ -123,7 +123,7 @@ def annotate_image(image):
                         unique_combinations.add(combination)
                         price = search_product_price(logo_label, product_label)
                         if price is not None:
-                            label_text += f"{product_label} ({logo_label} of ${price})\n"
+                            label_text += f"{product_label} ({logo_label} of {price})\n"
 
                 if label_text:
                     # Draw the bounding box
