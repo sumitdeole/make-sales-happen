@@ -58,6 +58,12 @@ def annotate_image(image):
             for person_id, box in person_boxes.items():
                 x_min, y_min, x_max, y_max = box
                 person_image = image.crop((x_min, y_min, x_max, y_max))  # Crop the image to the person's bounding box
+                
+                # Calculate dynamic label position
+                label_x = x_min
+                label_y = y_min - 20  # Initial position above the bounding box
+                if label_y < 0:  # If label is out of bounds, place it below the bounding box
+                    label_y = y_max + 5  # Adjust the value to your preference
 
                 # Detect product types
                 product_results = product_model.predict(person_image)
@@ -75,12 +81,11 @@ def annotate_image(image):
                     if combination not in unique_combinations:
                         label_text += f"Wearing {logo_label} {product_label}\n"
                         unique_combinations.add(combination)
-
                 if label_text:
                     # Draw the bounding box and label
                     detr_draw.rectangle(box, outline="blue", width=2)
-                    # detr_draw.text((x_min, y_min - 40), label_text, font=ImageFont.truetype("arial.ttf", size=16), fill="blue")
-                    detr_draw.text((x_min, y_min - 40), label_text, fill="blue")
+                    detr_draw.text((label_x, label_y), label_text, font=ImageFont.truetype("arial.ttf", size=16), fill="blue")
+                    
         else:
             st.warning("No person detected in the image.")
     except Exception as e:
