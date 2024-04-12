@@ -1,18 +1,13 @@
 import streamlit as st
+from PIL import Image
+import cv2
+import numpy as np
+import requests
+import tempfile
 from transformers import DetrImageProcessor, DetrForObjectDetection
-from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
 from io import BytesIO
-import cv2
-import torch
-import numpy as np
-import tempfile
-import time
-import requests
-from streamlit_webrtc import VideoProcessorBase, webrtc_streamer, VideoTransformerBase
 import cvzone
-import math
-
 
 # Define the weights folder
 weights_folder = "weights/"
@@ -194,11 +189,6 @@ def annotate_video(uploaded_video):
         video.release()
     except Exception as e:
         st.error(f"Error processing video: {e}")
-
-
-# Load the trained object detection YOLO model for product type detection
-product_weight_file_path = "./weights/best_obj_detect_prod_types.pt" # Update with actual path
-product_model = YOLO(product_weight_file_path)
 
 def get_bbox_for_label(label):
     # Implement your logic to get the bounding box for the given label
