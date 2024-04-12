@@ -131,7 +131,7 @@ def annotate_image(image):
                             label_text += f"{product_label} ({logo_label})\n"
 
                 # Draw the label outside the image
-                font = ImageFont.truetype("arial.ttf", size=20)  # Use a larger font size
+                font = ImageFont.load_default()  # Use the default font
                 label_width, label_height = detr_draw.textsize(label_text, font=font)
                 detr_draw.text((label_x, label_y), label_text, font=font, fill="blue")
                 label_y += label_height + label_spacing  # Move to the next label position
