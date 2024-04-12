@@ -58,21 +58,19 @@ def annotate_image(image):
             for person_id, box in person_boxes.items():
                 x_min, y_min, x_max, y_max = box
                 person_image = image.crop((x_min, y_min, x_max, y_max))  # Crop the image to the person's bounding box
-                
-                # Calculate dynamic label position
+            
+                # Calculate label position at the top of the bounding box
                 label_x = x_min
-                label_y = y_min - 20  # Initial position above the bounding box
-                if label_y < 0:  # If label is out of bounds, place it below the bounding box
-                    label_y = y_max + 5  # Adjust the value to your preference
-
+                label_y = y_min
+            
                 # Detect product types
                 product_results = product_model.predict(person_image)
                 product_labels = [product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
-
+            
                 # Detect logos
                 logo_results = logo_model.predict(person_image, conf=logo_detection_threshold)
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
-
+            
                 # Construct the label text
                 label_text = ""
                 unique_combinations = set()
@@ -81,16 +79,14 @@ def annotate_image(image):
                     if combination not in unique_combinations:
                         label_text += f"Wearing {logo_label} {product_label}\n"
                         unique_combinations.add(combination)
+            
                 if label_text:
-                    # Print label text for debugging
-                    print("Label Text:", label_text)
-
                     # Draw the bounding box and label
                     detr_draw.rectangle(box, outline="blue", width=2)
                     detr_draw.text((label_x, label_y), label_text, fill="blue")
 
                     # Print label position for debugging
-                    print("Label Position (x, y):", label_x, label_y)
+                    # print("Label Position (x, y):", label_x, label_y)
                     
         else:
             st.warning("No person detected in the image.")
