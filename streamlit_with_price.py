@@ -212,21 +212,28 @@ def annotate_video(uploaded_video):
 product_weight_file_path = "./weights/best_obj_detect_prod_types.pt" # Update with actual path
 product_model = YOLO(product_weight_file_path)
 
+def get_bbox_for_label(label):
+    # Implement your logic to get the bounding box for the given label
+    # This could involve using the YOLO model predictions or any other object detection method
+    # For demonstration, let's assume the bounding box is hardcoded
+    x1 = 50
+    y1 = 50
+    x2 = 150
+    y2 = 150
+    return x1, y1, x2, y2
+
 class WebcamProcessor(VideoProcessorBase):
     def __init__(self):
-        super().__init__()
-        self.product_model = YOLO(product_weight_file_path)
+        self.frame_out = None
 
     def recv(self, img: np.ndarray) -> np.ndarray:
         # Detect product types using the YOLO model
-        product_results = self.product_model.predict(img)
-        product_labels = [self.product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
+        product_results = product_model.predict(img)
+        product_labels = [product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
 
         # Annotate the webcam feed with detected product types
         for label in product_labels:
-            # Assuming you have a way to determine the bounding box for each detected product
-            # For demonstration, let's assume we have a function get_bbox_for_label that returns the bounding box
-            bbox = get_bbox_for_label(label) # This function needs to be implemented based on your detection logic
+            bbox = get_bbox_for_label(label)
             x1, y1, x2, y2 = bbox
             cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
             cvzone.putTextRect(img, label, (max(0, x1), max(35, y1)), scale=1, thickness=1)
@@ -244,16 +251,16 @@ def main():
             # Start webcam streaming using streamlit-webrtc
             webrtc_ctx = webrtc_streamer(
                 key="example",
-                video_processor_factory=WebcamProcessor,
+                video_transformer_factory=WebcamProcessor,
                 async_transform=True,
             )
 
-            if not webrtc_ctx.video_processor:
+            if not webrtc_ctx.video_transformer:
                 st.warning("No video source found. Please allow webcam access.")
                 return
 
             st.write("Webcam Feed:")
-            st.image(webrtc_ctx.video_processor.frame_out, channels="BGR", use_column_width=True)
+            st.image(webrtc_ctx.video_transformer.frame_out, channels="BGR", use_column_width=True)
     elif upload_type == "Image":
         uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
         if uploaded_image is not None:
