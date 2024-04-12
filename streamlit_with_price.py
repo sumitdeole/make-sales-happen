@@ -64,6 +64,8 @@ def search_product_price(brand, product_type, country="us", language="en"):
 
 from PIL import Image, ImageDraw, ImageFont
 
+from PIL import Image, ImageDraw, ImageFont
+
 def annotate_image(image):
     try:
         # Load DETR model and processor for person detection
@@ -137,12 +139,19 @@ def annotate_image(image):
                     label_x = x_min + 5 # Offset from the left
                     label_y = y_min + 5 # Offset from the top
 
+                    # Check if the label would be outside the image
+                    if label_x + label_width > image.width or label_y + label_height > image.height:
+                        # Adjust label position to be outside the image
+                        label_x = min(label_x, image.width - label_width)
+                        label_y = min(label_y, image.height - label_height)
+
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
         else:
             st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
+
 
         
 
