@@ -142,7 +142,7 @@ def annotate_video(uploaded_video):
         st.error(f"Error processing video: {e}")
 
 def main():
-    st.title("Offline Retailer Sales Targeting App")
+    st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
 
     use_webcam = st.checkbox("Use Webcam")
     upload_type = st.radio("Upload Type", ["Image", "Video"])
