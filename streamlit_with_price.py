@@ -214,12 +214,13 @@ product_model = YOLO(product_weight_file_path)
 
 class WebcamProcessor(VideoProcessorBase):
     def __init__(self):
-        self.frame_out = None
+        super().__init__()
+        self.product_model = YOLO(product_weight_file_path)
 
     def recv(self, img: np.ndarray) -> np.ndarray:
         # Detect product types using the YOLO model
-        product_results = product_model.predict(img)
-        product_labels = [product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
+        product_results = self.product_model.predict(img)
+        product_labels = [self.product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
 
         # Annotate the webcam feed with detected product types
         for label in product_labels:
@@ -243,16 +244,16 @@ def main():
             # Start webcam streaming using streamlit-webrtc
             webrtc_ctx = webrtc_streamer(
                 key="example",
-                video_transformer_factory=WebcamProcessor,
+                video_processor_factory=WebcamProcessor,
                 async_transform=True,
             )
 
-            if not webrtc_ctx.video_transformer:
+            if not webrtc_ctx.video_processor:
                 st.warning("No video source found. Please allow webcam access.")
                 return
 
             st.write("Webcam Feed:")
-            st.image(webrtc_ctx.video_transformer.frame_out, channels="BGR", use_column_width=True)
+            st.image(webrtc_ctx.video_processor.frame_out, channels="BGR", use_column_width=True)
     elif upload_type == "Image":
         uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
         if uploaded_image is not None:
