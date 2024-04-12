@@ -228,31 +228,26 @@ class WebcamProcessor(VideoProcessorBase):
 def main():
     st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
 
-    # Use columns to create a left and right layout
-    left_col, right_col = st.columns([3, 3])
+    # Browse and Selection Image/Video
+    upload_type = st.radio("Upload Type", ["Image", "Video"])
 
-    with left_col:
-        # Browse and Selection Image/Video
-        upload_type = st.radio("Upload Type", ["Image", "Video"])
+    if upload_type == "Image":
+        uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+        if uploaded_image is not None:
+            image = Image.open(uploaded_image)
+            st.image(image, caption="Uploaded Image", use_column_width=True)
 
-        if upload_type == "Image":
-            uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
-            if uploaded_image is not None:
-                image = Image.open(uploaded_image)
-                st.image(image, caption="Uploaded Image", use_column_width=True)
+            if st.button("Annotate"):
+                # Annotate the image
+                annotate_image(image)
+                # Display the uploaded image and the annotated image side by side
+                st.image([image, image], caption=["Uploaded Image", "Annotated Image"], use_column_width=True)
 
-                if st.button("Annotate"):
-                    # Annotate the image
-                    annotate_image(image)
-                    # Display the annotated image in the right column
-                    with right_col:
-                        st.image(image, caption="Annotated Image", use_column_width=True)
-
-        elif upload_type == "Video":
-            uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
-            if uploaded_video is not None:
-                # Process the uploaded video
-                annotate_video(uploaded_video)
+    elif upload_type == "Video":
+        uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+        if uploaded_video is not None:
+            # Process the uploaded video
+            annotate_video(uploaded_video)
 
 if __name__ == "__main__":
     main()
