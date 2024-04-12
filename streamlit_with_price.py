@@ -9,6 +9,10 @@ import numpy as np
 import tempfile
 import time
 import requests
+from streamlit_webrtc import VideoProcessorBase, webrtc_streamer, VideoTransformerBase
+import cvzone
+import math
+
 
 # Authenticate to Google Cloud Storage if not already done
 # Make sure to set up the authentication properly before running this code
@@ -203,6 +207,32 @@ def annotate_video(uploaded_video):
     except Exception as e:
         st.error(f"Error processing video: {e}")
 
+
+# Load the trained YOLO model for product type detection
+product_weight_file_path = "./weights/best_obj_detect_prod_types.pt" # Update with actual path
+product_model = YOLO(product_weight_file_path)
+
+
+class WebcamProcessor(VideoProcessorBase):
+    def __init__(self):
+        self.frame_out = None
+
+    def recv(self, img: np.ndarray) -> np.ndarray:
+        # Detect product types using the YOLO model
+        product_results = product_model.predict(img)
+        product_labels = [product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
+
+        # Annotate the webcam feed with detected product types
+        for label in product_labels:
+            # Assuming you have a way to determine the bounding box for each detected product
+            # For demonstration, let's assume we have a function get_bbox_for_label that returns the bounding box
+            bbox = get_bbox_for_label(label) # This function needs to be implemented based on your detection logic
+            x1, y1, x2, y2 = bbox
+            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
+            cvzone.putTextRect(img, label, (max(0, x1), max(35, y1)), scale=1, thickness=1)
+
+        return img
+
 def main():
     st.title("Offline Retailer Sales Targeting App")
 
@@ -211,8 +241,19 @@ def main():
 
     if use_webcam:
         if st.button("Capture Frame"):
-            # (existing webcam code)
-            pass
+            # Start webcam streaming using streamlit-webrtc
+            webrtc_ctx = webrtc_streamer(
+                key="example",
+                video_transformer_factory=WebcamProcessor,
+                async_transform=True,
+            )
+
+            if not webrtc_ctx.video_transformer:
+                st.warning("No video source found. Please allow webcam access.")
+                return
+
+            st.write("Webcam Feed:")
+            st.image(webrtc_ctx.video_transformer.frame_out, channels="BGR", use_column_width=True)
     elif upload_type == "Image":
         uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
         if uploaded_image is not None:
@@ -230,3 +271,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
