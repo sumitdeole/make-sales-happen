@@ -142,46 +142,53 @@ def annotate_video(uploaded_video):
 def main():
     st.title("Offline Retailer Sales Targeting App")
 
-    # Upload Type selection
-    upload_type = st.radio("Upload Type", ["Image", "Video"])
+    col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
 
-    # If uploading an image
-    if upload_type == "Image":
-        st.sidebar.title("Annotate Image")
+    # Webcam Image/Video Choice
+    with col1:
+        use_webcam = st.checkbox("Use Webcam")
 
-        # Upload Image
-        uploaded_image = st.sidebar.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+    # Browse Option
+    with col2:
+        upload_type = st.radio("Upload Type", ["Image", "Video"])
 
-        # If image is uploaded
-        if uploaded_image is not None:
-            # Display the input image on the left
-            st.image(uploaded_image, caption="Input Image", use_column_width=True)
-
-            # Annotate Button in the middle
-            if st.sidebar.button("Annotate"):
-                # Read the image
+    # Input Image/Video Display
+    with col3:
+        if use_webcam:
+            # Webcam placeholder
+            st.write("Webcam Placeholder")
+        elif upload_type == "Image":
+            uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+            if uploaded_image is not None:
                 image = Image.open(uploaded_image)
-                # Annotate the image
+                st.image(image, caption="Input Image", use_column_width=True)
+        elif upload_type == "Video":
+            uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+            if uploaded_video is not None:
+                st.video(uploaded_video)
+
+    # Annotate Button
+    with col4:
+        if st.button("Annotate"):
+            if use_webcam:
+                # Webcam annotation logic
+                pass
+            elif upload_type == "Image":
                 annotate_image(image)
-                # Display the annotated image on the right
-                st.image(image, caption="Annotated Image", use_column_width=True)
-
-    # If uploading a video
-    elif upload_type == "Video":
-        st.sidebar.title("Annotate Video")
-
-        # Upload Video
-        uploaded_video = st.sidebar.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
-
-        # If video is uploaded
-        if uploaded_video is not None:
-            # Display the input video on the left
-            st.video(uploaded_video)
-
-            # Annotate Button in the middle
-            if st.sidebar.button("Annotate"):
-                # Annotate the video
+            elif upload_type == "Video":
                 annotate_video(uploaded_video)
+
+    # Labeled Image/Video Display
+    with col5:
+        if use_webcam:
+            # Placeholder for labeled image/video
+            st.write("Labeled Image/Video Placeholder")
+        elif upload_type == "Image":
+            # Placeholder for labeled image
+            st.write("Labeled Image Placeholder")
+        elif upload_type == "Video":
+            # Placeholder for labeled video
+            st.write("Labeled Video Placeholder")
 
 # Run the main function
 if __name__ == "__main__":
