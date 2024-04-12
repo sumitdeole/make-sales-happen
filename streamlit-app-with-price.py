@@ -239,29 +239,19 @@ def main():
             uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
             if uploaded_image is not None:
                 image = Image.open(uploaded_image)
-                st.image(image, caption="Uploaded Image", use_column_width=True)
 
                 if st.button("Annotate"):
-                    # Store the image in session state
-                    st.session_state.image = image
-                    annotate_image(image)
-                    st.image(image, caption="Annotated Image", use_column_width=True)
+                    # Annotate the image
+                    annotated_image = annotate_image(image)
+                    # Display the annotated image in the right column
+                    with right_col:
+                        st.image(annotated_image, caption="Annotated Image", use_column_width=True)
 
         elif upload_type == "Video":
             uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
             if uploaded_video is not None:
                 # Process the uploaded video
                 annotate_video(uploaded_video)
-
-    with right_col:
-        # Check if the image is stored in session state
-        if 'image' in st.session_state:
-            # Display the labelled image or video in the right column
-            # This part depends on how you want to display the labelled content
-            # For demonstration, let's assume you want to display a labelled image
-            # You would need to adjust this based on your actual implementation
-            st.image(st.session_state.image, caption="Labelled Image", use_column_width=True)
-            
 
 if __name__ == "__main__":
     main()
