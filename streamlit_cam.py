@@ -83,7 +83,7 @@ def annotate_image(image):
                 if label_text:
                     # Draw the bounding box and label
                     detr_draw.rectangle(box, outline="blue", width=2)
-                    detr_draw.text((label_x, label_y), label_text, fill="blue")
+                    detr_draw.text((label_x, label_y), label_text, font=ImageFont.truetype("arial.ttf", size=20), fill="blue")
 
                     # Print label position for debugging
                     # print("Label Position (x, y):", label_x, label_y)
