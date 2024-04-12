@@ -7,3 +7,4 @@ ultralytics==8.1.45
 tokenizers==0.15.2
 dill
 streamlit_webrtc
+cvzone
