@@ -66,6 +66,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 from PIL import Image, ImageDraw, ImageFont
 
+from PIL import Image, ImageDraw, ImageFont
+
 def annotate_image(image):
     try:
         # Load DETR model and processor for person detection
@@ -118,14 +120,16 @@ def annotate_image(image):
                 logo_results = logo_model.predict(person_image, conf=logo_detection_threshold)
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
 
-                # Construct the label text
+                # Construct the label text with price search
                 label_text = ""
-                unique_combinations = set()
+                unique_combinations = set() # Set to store unique combinations
                 for product_label, logo_label in zip(product_labels, logo_labels):
                     combination = (logo_label, product_label)
                     if combination not in unique_combinations:
-                        label_text += f"Wearing {logo_label} {product_label}\n"
                         unique_combinations.add(combination)
+                        price = search_product_price(logo_label, product_label)
+                        if price is not None:
+                            label_text += f"{product_label} ({logo_label} of {price})\n"
 
                 if label_text:
                     # Draw the bounding box
