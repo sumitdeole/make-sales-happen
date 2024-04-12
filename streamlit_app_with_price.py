@@ -14,9 +14,6 @@ import cvzone
 import math
 
 
-# Authenticate to Google Cloud Storage if not already done
-# Make sure to set up the authentication properly before running this code
-
 # Define the weights folder
 weights_folder = "weights/"
 
@@ -65,12 +62,6 @@ def search_product_price(brand, product_type, country="us", language="en"):
         print("Error during request:", e)
 
     return None
-
-from PIL import Image, ImageDraw, ImageFont
-
-from PIL import Image, ImageDraw, ImageFont
-
-from PIL import Image, ImageDraw, ImageFont
 
 def annotate_image(image):
     try:
@@ -160,9 +151,6 @@ def annotate_image(image):
     except Exception as e:
         st.error(f"Error processing image: {e}")
 
-
-        
-
 def annotate_video(uploaded_video):
     try:
         # Save the uploaded video to a temporary file
@@ -208,7 +196,7 @@ def annotate_video(uploaded_video):
         st.error(f"Error processing video: {e}")
 
 
-# Load the trained YOLO model for product type detection
+# Load the trained object detection YOLO model for product type detection
 product_weight_file_path = "./weights/best_obj_detect_prod_types.pt" # Update with actual path
 product_model = YOLO(product_weight_file_path)
 
@@ -223,6 +211,7 @@ def get_bbox_for_label(label):
     return x1, y1, x2, y2
 
 class WebcamProcessor(VideoProcessorBase):
+    # Unfortunately, Streamlit shareable web app does not allow webcam access
     def __init__(self):
         self.frame_out = None
 
@@ -237,8 +226,8 @@ class WebcamProcessor(VideoProcessorBase):
             x1, y1, x2, y2 = bbox
             cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
             cvzone.putTextRect(img, label, (max(0, x1), max(35, y1)), scale=1, thickness=1)
-
         return img
+
 
 def main():
     st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
