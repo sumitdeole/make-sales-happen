@@ -84,7 +84,7 @@ def annotate_image(image):
                 if label_text:
                     # Draw the bounding box and label
                     detr_draw.rectangle(box, outline="blue", width=2)
-                    detr_draw.text((label_x, label_y), label_text, font=ImageFont.truetype("arial.ttf", size=16), fill="blue")
+                    detr_draw.text((label_x, label_y), label_text, fill="blue")
                     
         else:
             st.warning("No person detected in the image.")
