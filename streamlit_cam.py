@@ -82,9 +82,15 @@ def annotate_image(image):
                         label_text += f"Wearing {logo_label} {product_label}\n"
                         unique_combinations.add(combination)
                 if label_text:
+                    # Print label text for debugging
+                    print("Label Text:", label_text)
+
                     # Draw the bounding box and label
                     detr_draw.rectangle(box, outline="blue", width=2)
                     detr_draw.text((label_x, label_y), label_text, fill="blue")
+
+                    # Print label position for debugging
+                    print("Label Position (x, y):", label_x, label_y)
                     
         else:
             st.warning("No person detected in the image.")
