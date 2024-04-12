@@ -188,7 +188,7 @@ def annotate_video(uploaded_video):
 
         # Display the uploaded video and the annotated snapshots
         st.video(temp_file_path)
-        # st.image(image1, caption="Annotated Snapshot at 0 seconds", use_column_width=True)
+        st.image(image1, caption="Annotated Snapshot at 0 seconds", use_column_width=True)
         st.image(image2, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
 
         # Release the video capture
@@ -244,9 +244,6 @@ def main():
                 if st.button("Annotate"):
                     # Annotate the image
                     annotate_image(image)
-                    # Display the annotated image in the right column
-                    with right_col:
-                        st.image(image, caption="Annotated Image", use_column_width=True)
 
         elif upload_type == "Video":
             uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
@@ -256,4 +253,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
