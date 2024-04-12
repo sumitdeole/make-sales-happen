@@ -89,7 +89,7 @@ def annotate_image(image):
                     label_y = y_max - label_height - 5  # Place the label just above the bottom of the bounding box
 
                     # Draw the label
-                    detr_draw.text((label_x, label_y), label_text, font=font, fill="blue")
+                    detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
         else:
             st.warning("No person detected in the image.")
     except Exception as e:
