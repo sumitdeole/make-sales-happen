@@ -142,6 +142,9 @@ def annotate_video(uploaded_video):
 def main():
     st.title("Offline Retailer Sales Targeting App")
 
+    # Webcam checkbox
+    use_webcam = st.checkbox("Use Webcam")
+
     # Upload Type selection
     upload_type = st.radio("Upload Type", ["Image", "Video"])
 
