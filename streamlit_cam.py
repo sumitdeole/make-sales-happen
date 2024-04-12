@@ -80,16 +80,14 @@ def annotate_image(image):
                     # Draw the bounding box
                     detr_draw.rectangle(box, outline="blue", width=2)
 
-                    # Load default font
-                    default_font = ImageFont.load_default()
-
                     # Calculate label position inside the bounding box
-                    label_size = detr_draw.textsize(label_text, font=default_font)
-                    label_x = x_min + (x_max - x_min - label_size[0]) // 2
-                    label_y = y_min + 5  # Place the label just above the bounding box
+                    font = ImageFont.load_default()  # Load default font
+                    label_width, label_height = font.getsize(label_text)
+                    label_x = x_min + (x_max - x_min - label_width) // 2
+                    label_y = y_max - label_height - 5  # Place the label just above the bottom of the bounding box
 
                     # Draw the label
-                    detr_draw.text((label_x, label_y), label_text, font=default_font, fill="blue")
+                    detr_draw.text((label_x, label_y), label_text, font=font, fill="blue")
         else:
             st.warning("No person detected in the image.")
     except Exception as e:
