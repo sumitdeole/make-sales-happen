@@ -138,42 +138,51 @@ def annotate_video(uploaded_video):
     except Exception as e:
         st.error(f"Error processing video: {e}")
 
+# Main function
 def main():
     st.title("Offline Retailer Sales Targeting App")
 
-    use_webcam = st.checkbox("Use Webcam")
+    # Upload Type selection
     upload_type = st.radio("Upload Type", ["Image", "Video"])
 
-    if use_webcam:
-        if st.button("Capture Frame"):
-            try:
-                frame = capture_webcam_frame()
-                if frame is not None:
-                    annotate_image(frame)
-                    st.image(frame, caption="Annotated Frame", use_column_width=True)
-                else:
-                    st.warning("Failed to capture frame from webcam.")
-            except Exception as e:
-                st.error(f"Error capturing frame: {e}")
-    elif upload_type == "Image":
-        uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+    # If uploading an image
+    if upload_type == "Image":
+        st.sidebar.title("Annotate Image")
+
+        # Upload Image
+        uploaded_image = st.sidebar.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+
+        # If image is uploaded
         if uploaded_image is not None:
-            try:
+            # Display the input image on the left
+            st.image(uploaded_image, caption="Input Image", use_column_width=True)
+
+            # Annotate Button in the middle
+            if st.sidebar.button("Annotate"):
+                # Read the image
                 image = Image.open(uploaded_image)
-                st.image(image, caption="Uploaded Image", use_column_width=True)
+                # Annotate the image
+                annotate_image(image)
+                # Display the annotated image on the right
+                st.image(image, caption="Annotated Image", use_column_width=True)
 
-                if st.button("Annotate"):
-                    annotate_image(image)
-                    st.image(image, caption="Annotated Image", use_column_width=True)
-            except Exception as e:
-                st.error(f"Error processing image: {e}")
+    # If uploading a video
     elif upload_type == "Video":
-        uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
-        if uploaded_video is not None:
-            try:
-                annotate_video(uploaded_video)
-            except Exception as e:
-                st.error(f"Error processing video: {e}")
+        st.sidebar.title("Annotate Video")
 
+        # Upload Video
+        uploaded_video = st.sidebar.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+
+        # If video is uploaded
+        if uploaded_video is not None:
+            # Display the input video on the left
+            st.video(uploaded_video)
+
+            # Annotate Button in the middle
+            if st.sidebar.button("Annotate"):
+                # Annotate the video
+                annotate_video(uploaded_video)
+
+# Run the main function
 if __name__ == "__main__":
     main()
