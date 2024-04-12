@@ -212,7 +212,6 @@ def annotate_video(uploaded_video):
 product_weight_file_path = "./weights/best_obj_detect_prod_types.pt" # Update with actual path
 product_model = YOLO(product_weight_file_path)
 
-
 class WebcamProcessor(VideoProcessorBase):
     def __init__(self):
         self.frame_out = None
@@ -271,4 +270,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
