@@ -84,6 +84,7 @@ def annotate_image(image):
             detr_draw = ImageDraw.Draw(image)
             person_count = 0  # Counter for numbering persons
             person_boxes = {}  # Dictionary to store bounding boxes for each person
+            max_label_width = 0  # To store the maximum label width
             for score, label, box in zip(detr_results["scores"], detr_results["labels"], detr_results["boxes"]):
                 if detr_model.config.id2label[label.item()] == "person":
                     person_count += 1
@@ -123,22 +124,32 @@ def annotate_image(image):
                         unique_combinations.add(combination)
                         price = search_product_price(logo_label, product_label)
                         if price is not None:
-                            label_text += f"{product_label} ({logo_label} of {price})\n"
+                            label = f"{product_label} ({logo_label} of {price})"
+                        else:
+                            label = f"{product_label} ({logo_label})"
+                        label_text += label + "\n"
+                        max_label_width = max(max_label_width, len(label))
 
                 if label_text:
                     # Draw the bounding box
                     detr_draw.rectangle(box, outline="blue", width=2)
 
-                    # Calculate label position in the top left corner
-                    font = ImageFont.load_default()  # Load default font
-                    label_bbox = detr_draw.textbbox((0, 0), label_text, font=font)
-                    label_width = label_bbox[2] - label_bbox[0]
-                    label_height = label_bbox[3] - label_bbox[1]
-                    label_x = x_min
-                    label_y = y_min
+                    # Calculate label position outside the image on the right side
+                    label_x = x_max + 10
+                    label_y = y_min  # Align with the top of the bounding box
 
                     # Draw the label
+                    font = ImageFont.load_default()  # Load default font
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
+
+            # Adjust label positions to avoid overlapping
+            label_height = font.getsize("A")[1]  # Height of a typical label
+            current_label_y = 0
+            for person_id, box in person_boxes.items():
+                _, y_min, _, _ = box
+                detr_draw.text((image.width + 20, current_label_y), person_id, font=font, fill="blue")
+                current_label_y += label_height
+
         else:
             st.warning("No person detected in the image.")
     except Exception as e:
