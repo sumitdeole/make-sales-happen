@@ -115,7 +115,7 @@ def annotate_image(image):
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
 
                 # Construct the label text with price search
-                label_text = f"{person_id}: wearing "
+                label_text = ""
                 unique_combinations = set()  # Set to store unique combinations
                 for product_label, logo_label in zip(product_labels, logo_labels):
                     combination = (logo_label, product_label)
@@ -123,22 +123,19 @@ def annotate_image(image):
                         unique_combinations.add(combination)
                         price = search_product_price(logo_label, product_label)
                         if price is not None:
-                            label_text += f"\n {product_label} ({logo_label} of ${price})"
-                        else:
-                            label_text += f"\n {product_label} ({logo_label})"
-                label_text = label_text.strip()
+                            label_text += f"{product_label} ({logo_label} of ${price})\n"
 
                 if label_text:
                     # Draw the bounding box
                     detr_draw.rectangle(box, outline="blue", width=2)
 
-                    # Calculate label position inside the bounding box
+                    # Calculate label position in the top left corner
                     font = ImageFont.load_default()  # Load default font
                     label_bbox = detr_draw.textbbox((0, 0), label_text, font=font)
                     label_width = label_bbox[2] - label_bbox[0]
                     label_height = label_bbox[3] - label_bbox[1]
-                    label_x = x_min + (x_max - x_min - label_width) // 2
-                    label_y = y_max - label_height - 5  # Place the label just above the bottom of the bounding box
+                    label_x = x_min
+                    label_y = y_min
 
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
