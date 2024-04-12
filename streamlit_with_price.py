@@ -62,6 +62,8 @@ def search_product_price(brand, product_type, country="us", language="en"):
 
     return None
 
+from PIL import Image, ImageDraw, ImageFont
+
 def annotate_image(image):
     try:
         # Load DETR model and processor for person detection
@@ -82,8 +84,8 @@ def annotate_image(image):
         if person_detected:
             # Draw bounding boxes and labels for persons on the image
             detr_draw = ImageDraw.Draw(image)
-            person_count = 0  # Counter for numbering persons
-            person_boxes = {}  # Dictionary to store bounding boxes for each person
+            person_count = 0 # Counter for numbering persons
+            person_boxes = {} # Dictionary to store bounding boxes for each person
             for score, label, box in zip(detr_results["scores"], detr_results["labels"], detr_results["boxes"]):
                 if detr_model.config.id2label[label.item()] == "person":
                     person_count += 1
@@ -91,11 +93,11 @@ def annotate_image(image):
                     person_boxes[f"Person {person_count}"] = box
 
             # Load the trained YOLO model for product type detection
-            product_weight_file_path = "./weights/best_obj_detect_prod_types.pt"  # Update with actual path
+            product_weight_file_path = "./weights/best_obj_detect_prod_types.pt" # Update with actual path
             product_model = YOLO(product_weight_file_path)
 
             # Load the trained YOLO model for logo detection
-            logo_weight_file_path = "./weights/best_obj_detect_logos.pt"  # Update with actual path
+            logo_weight_file_path = "./weights/best_obj_detect_logos.pt" # Update with actual path
             logo_model = YOLO(logo_weight_file_path)
 
             # Set the detection threshold (e.g., 0.3 for 30% confidence)
@@ -104,7 +106,7 @@ def annotate_image(image):
             # Draw bounding boxes and labels for persons on the image
             for person_id, box in person_boxes.items():
                 x_min, y_min, x_max, y_max = box
-                person_image = image.crop((x_min, y_min, x_max, y_max))  # Crop the image to the person's bounding box
+                person_image = image.crop((x_min, y_min, x_max, y_max)) # Crop the image to the person's bounding box
 
                 # Detect product types
                 product_results = product_model.predict(person_image)
@@ -114,26 +116,26 @@ def annotate_image(image):
                 logo_results = logo_model.predict(person_image, conf=logo_detection_threshold)
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
 
-                # Construct the label text with price search
+                # Construct the label text
                 label_text = ""
-                unique_combinations = set()  # Set to store unique combinations
+                unique_combinations = set()
                 for product_label, logo_label in zip(product_labels, logo_labels):
                     combination = (logo_label, product_label)
                     if combination not in unique_combinations:
+                        label_text += f"Wearing {logo_label} {product_label}\n"
                         unique_combinations.add(combination)
-                        price = search_product_price(logo_label, product_label)
-                        if price is not None:
-                            label_text += f"{product_label} ({logo_label} of {price})\n"
 
                 if label_text:
                     # Draw the bounding box
                     detr_draw.rectangle(box, outline="blue", width=2)
 
-                    # Calculate label position in the top left corner
-                    font = ImageFont.load_default()  # Load default font
-                    label_width, label_height = detr_draw.multiline_textsize(label_text, font=font)
-                    label_x = x_min
-                    label_y = y_min
+                    # Calculate label position inside the bounding box (top left corner)
+                    font = ImageFont.load_default() # Load default font
+                    label_bbox = detr_draw.textbbox((0, 0), label_text, font=font)
+                    label_width = label_bbox[2] - label_bbox[0]
+                    label_height = label_bbox[3] - label_bbox[1]
+                    label_x = x_min + 5 # Offset from the left
+                    label_y = y_min + 5 # Offset from the top
 
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
@@ -141,6 +143,7 @@ def annotate_image(image):
             st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
+
         
 
 def annotate_video(uploaded_video):
