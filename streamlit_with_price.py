@@ -8,7 +8,7 @@ import torch
 import numpy as np
 import tempfile
 import time
-import requests
+import requests  # Import requests for HTTP requests
 
 # Authenticate to Google Cloud Storage if not already done
 # Make sure to set up the authentication properly before running this code
@@ -16,7 +16,7 @@ import requests
 # Define the weights folder
 weights_folder = "weights/"
 
-# RapidAPI headers
+# Source: "https://rapidapi.com/letscrape-6bRBa3QguO5/api/real-time-product-search"
 headers = {
     "X-RapidAPI-Key": "4019769c6cmsh0245f46f03d9fecp161a69jsn69acf0a47cdf",
     "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com"
@@ -115,27 +115,30 @@ def annotate_image(image):
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
 
                 # Construct the label text with price search
-                label_text = ""
-                unique_combinations = set()  # Set to store unique combinations
+                label_text = f"{person_id}: wearing "
+                unique_combinations = set() # Set to store unique combinations
                 for product_label, logo_label in zip(product_labels, logo_labels):
                     combination = (logo_label, product_label)
                     if combination not in unique_combinations:
                         unique_combinations.add(combination)
                         price = search_product_price(logo_label, product_label)
                         if price is not None:
-                            label_text += f"{product_label} ({logo_label} of ${price})\n"
+                            label_text += f"\n {product_label} ({logo_label} of {price})"
+                        else:
+                            label_text += f"\n {product_label} ({logo_label})"
+                label_text = label_text.strip()
 
                 if label_text:
                     # Draw the bounding box
                     detr_draw.rectangle(box, outline="blue", width=2)
 
-                    # Calculate label position in the top left corner
+                    # Calculate label position inside the bounding box
                     font = ImageFont.load_default()  # Load default font
                     label_bbox = detr_draw.textbbox((0, 0), label_text, font=font)
                     label_width = label_bbox[2] - label_bbox[0]
                     label_height = label_bbox[3] - label_bbox[1]
-                    label_x = x_min
-                    label_y = y_min
+                    label_x = x_min + (x_max - x_min - label_width) // 2
+                    label_y = y_max - label_height - 5  # Place the label just above the bottom of the bounding box
 
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
@@ -143,76 +146,3 @@ def annotate_image(image):
             st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
-
-
-def annotate_video(uploaded_video):
-    try:
-        # Save the uploaded video to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
-            temp_file.write(uploaded_video.read())
-            temp_file_path = temp_file.name
-
-        # Load the video
-        video = cv2.VideoCapture(temp_file_path)
-
-        # Get the video properties
-        fps = video.get(cv2.CAP_PROP_FPS)
-        width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-        # Take snapshots at 0 seconds and 2 seconds
-        video.set(cv2.CAP_PROP_POS_MSEC, 0)
-        ret, frame = video.read()
-        if not ret:
-            st.error("Error reading the video file.")
-            return
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        image1 = Image.fromarray(frame)
-        annotate_image(image1)
-
-        video.set(cv2.CAP_PROP_POS_MSEC, 2000)
-        ret, frame = video.read()
-        if not ret:
-            st.error("Error reading the video file.")
-            return
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        image2 = Image.fromarray(frame)
-        annotate_image(image2)
-
-        # Display the uploaded video and the annotated snapshots
-        st.video(temp_file_path)
-        # st.image(image1, caption="Annotated Snapshot at 0 seconds", use_column_width=True)
-        st.image(image2, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
-
-        # Release the video capture
-        video.release()
-    except Exception as e:
-        st.error(f"Error processing video: {e}")
-
-def main():
-    st.title("Offline Retailer Sales Targeting App")
-
-    use_webcam = st.checkbox("Use Webcam")
-    upload_type = st.radio("Upload Type", ["Image", "Video"])
-
-    if use_webcam:
-        if st.button("Capture Frame"):
-            # (existing webcam code)
-            pass
-    elif upload_type == "Image":
-        uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
-        if uploaded_image is not None:
-            image = Image.open(uploaded_image)
-            st.image(image, caption="Uploaded Image", use_column_width=True)
-
-            if st.button("Annotate"):
-                annotate_image(image)
-                st.image(image, caption="Annotated Image", use_column_width=True)
-    elif upload_type == "Video":
-        uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
-        if uploaded_video is not None:
-            # Process the uploaded video
-            annotate_video(uploaded_video)
-
-if __name__ == "__main__":
-    main()
