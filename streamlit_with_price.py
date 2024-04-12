@@ -102,9 +102,6 @@ def annotate_image(image):
             logo_detection_threshold = 0.4
 
             # Draw bounding boxes and labels for persons on the image
-            label_x = image.width + 20  # Position the labels to the right of the image
-            label_y = 20  # Start the labels from the top
-            label_spacing = 30  # Vertical spacing between labels
             for person_id, box in person_boxes.items():
                 x_min, y_min, x_max, y_max = box
                 person_image = image.crop((x_min, y_min, x_max, y_max))  # Crop the image to the person's bounding box
@@ -118,7 +115,7 @@ def annotate_image(image):
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
 
                 # Construct the label text with price search
-                label_text = f"{person_id}: "
+                label_text = ""
                 unique_combinations = set()  # Set to store unique combinations
                 for product_label, logo_label in zip(product_labels, logo_labels):
                     combination = (logo_label, product_label)
@@ -126,23 +123,24 @@ def annotate_image(image):
                         unique_combinations.add(combination)
                         price = search_product_price(logo_label, product_label)
                         if price is not None:
-                            label_text += f"{product_label} ({logo_label} of ${price})\n"
-                        else:
-                            label_text += f"{product_label} ({logo_label})\n"
+                            label_text += f"{product_label} ({logo_label} of {price})\n"
 
-                # Draw the label outside the image
-                font = ImageFont.load_default()  # Use the default font
-                label_width, label_height = detr_draw.textsize(label_text, font=font)
-                detr_draw.text((label_x, label_y), label_text, font=font, fill="blue")
-                label_y += label_height + label_spacing  # Move to the next label position
+                if label_text:
+                    # Draw the bounding box
+                    detr_draw.rectangle(box, outline="blue", width=2)
 
-                # Draw the bounding box
-                detr_draw.rectangle(box, outline="blue", width=2)
+                    # Calculate label position in the top left corner
+                    font = ImageFont.load_default()  # Load default font
+                    label_width, label_height = font.getsize_multiline(label_text)
+                    label_x = x_min
+                    label_y = y_min
+
+                    # Draw the label
+                    detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
         else:
             st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
-
 
 def annotate_video(uploaded_video):
     try:
