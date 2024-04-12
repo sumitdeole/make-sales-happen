@@ -77,13 +77,21 @@ def annotate_image(image):
                         unique_combinations.add(combination)
 
                 if label_text:
-                    # Draw the bounding box and label
+                    # Draw the bounding box
                     detr_draw.rectangle(box, outline="blue", width=2)
-                    detr_draw.text((x_min, y_min - 40), label_text, font=ImageFont.load_default(), fill="blue")
+
+                    # Calculate label position inside the bounding box
+                    label_width, label_height = detr_draw.textsize(label_text)
+                    label_x = x_min + (x_max - x_min - label_width) // 2
+                    label_y = y_max + 5  # Place the label just below the bounding box
+
+                    # Draw the label
+                    detr_draw.text((label_x, label_y), label_text, fill="blue")
         else:
             st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
+
 
 def annotate_video(uploaded_video):
     try:
