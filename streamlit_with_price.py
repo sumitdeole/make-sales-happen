@@ -131,7 +131,7 @@ def annotate_image(image):
 
                     # Calculate label position in the top left corner
                     font = ImageFont.load_default()  # Load default font
-                    label_width, label_height = font.getsize_multiline(label_text)
+                    label_width, label_height = detr_draw.multiline_textsize(label_text, font=font)
                     label_x = x_min
                     label_y = y_min
 
@@ -141,6 +141,7 @@ def annotate_image(image):
             st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
+        
 
 def annotate_video(uploaded_video):
     try:
