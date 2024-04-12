@@ -243,10 +243,10 @@ def main():
 
                 if st.button("Annotate"):
                     # Annotate the image
-                    annotated_image = annotate_image(image)
+                    annotate_image(image)
                     # Display the annotated image in the right column
                     with right_col:
-                        st.image(annotated_image, caption="Annotated Image", use_column_width=True)
+                        st.image(image, caption="Annotated Image", use_column_width=True)
 
         elif upload_type == "Video":
             uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
@@ -256,5 +256,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
