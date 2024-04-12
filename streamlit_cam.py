@@ -7,6 +7,9 @@ import tempfile
 import requests
 import torch
 
+# Use default PIL font
+default_font = ImageFont.load_default()
+
 # Authenticate to Google Cloud Storage if not already done
 # Make sure to set up the authentication properly before running this code
 
