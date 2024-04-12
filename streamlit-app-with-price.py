@@ -242,6 +242,8 @@ def main():
                 st.image(image, caption="Uploaded Image", use_column_width=True)
 
                 if st.button("Annotate"):
+                    # Store the image in session state
+                    st.session_state.image = image
                     annotate_image(image)
                     st.image(image, caption="Annotated Image", use_column_width=True)
 
@@ -252,11 +254,13 @@ def main():
                 annotate_video(uploaded_video)
 
     with right_col:
-        # Display the labelled image or video in the right column
-        # This part depends on how you want to display the labelled content
-        # For demonstration, let's assume you want to display a labelled image
-        # You would need to adjust this based on your actual implementation
-        st.image(annotate_image(image), caption="Labelled Image", use_column_width=True)
+        # Check if the image is stored in session state
+        if 'image' in st.session_state:
+            # Display the labelled image or video in the right column
+            # This part depends on how you want to display the labelled content
+            # For demonstration, let's assume you want to display a labelled image
+            # You would need to adjust this based on your actual implementation
+            st.image(st.session_state.image, caption="Labelled Image", use_column_width=True)
 
 if __name__ == "__main__":
     main()
