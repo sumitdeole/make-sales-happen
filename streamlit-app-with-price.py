@@ -239,21 +239,20 @@ def main():
             uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
             if uploaded_image is not None:
                 image = Image.open(uploaded_image)
-                st.session_state.image = image # Store the image in session state
-                st.session_state.annotated = False # Initialize the annotated flag
+                st.image(image, caption="Uploaded Image", use_column_width=True)
 
                 if st.button("Annotate"):
-                    # Annotate the image
+                    # Store the image in session state
+                    st.session_state.image = image
                     annotated_image = annotate_image(image)
-                    # Store the annotated image in session state
-                    st.session_state.image = annotated_image
-                    st.session_state.annotated = True # Set the annotated flag to True
+                    with right_col:
+                        st.image(annotated_image, caption="Annotated Image", use_column_width=True)
 
-    with right_col:
-        # Check if the image is stored in session state and if it has been annotated
-        if 'image' in st.session_state and st.session_state.annotated:
-            # Display the annotated image in the right column
-            st.image(st.session_state.image, caption="Annotated Image", use_column_width=True)
+        elif upload_type == "Video":
+            uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+            if uploaded_video is not None:
+                # Process the uploaded video
+                annotate_video(uploaded_video)
 
 if __name__ == "__main__":
     main()
