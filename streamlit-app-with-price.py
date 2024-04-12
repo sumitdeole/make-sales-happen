@@ -12,6 +12,8 @@ import requests
 from streamlit_webrtc import VideoProcessorBase, webrtc_streamer, VideoTransformerBase
 import cvzone
 import math
+from io import BytesIO
+
 
 # Define the weights folder
 weights_folder = "weights/"
@@ -226,28 +228,14 @@ class WebcamProcessor(VideoProcessorBase):
 def main():
     st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
 
-    use_webcam = st.checkbox("Use Webcam")
-    upload_type = st.radio("Upload Type", ["Image", "Video"])
+    # Use columns to create a left and right layout
+    left_col, right_col = st.columns([3, 3])
 
-    if use_webcam:
-        if st.button("Capture Frame"):
-            # Start webcam streaming using streamlit-webrtc
-            webrtc_ctx = webrtc_streamer(
-                key="example",
-                video_transformer_factory=WebcamProcessor,
-                async_transform=True,
-            )
+    with left_col:
+        # Browse and Selection Image/Video
+        upload_type = st.radio("Upload Type", ["Image", "Video"])
 
-            if not webrtc_ctx.video_transformer:
-                st.warning("No video source found. Please allow webcam access.")
-                return
-
-            st.write("Webcam Feed:")
-            st.image(webrtc_ctx.video_transformer.frame_out, channels="BGR", use_column_width=True)
-    elif upload_type == "Image":
-        col1, col2, col3 = st.columns([1, 1, 2])
-
-        with col1:
+        if upload_type == "Image":
             uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
             if uploaded_image is not None:
                 image = Image.open(uploaded_image)
@@ -257,14 +245,18 @@ def main():
                     annotate_image(image)
                     st.image(image, caption="Annotated Image", use_column_width=True)
 
-    elif upload_type == "Video":
-        col1, col2, col3 = st.columns([1, 1, 2])
-
-        with col1:
+        elif upload_type == "Video":
             uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
             if uploaded_video is not None:
                 # Process the uploaded video
                 annotate_video(uploaded_video)
+
+    with right_col:
+        # Display the labelled image or video in the right column
+        # This part depends on how you want to display the labelled content
+        # For demonstration, let's assume you want to display a labelled image
+        # You would need to adjust this based on your actual implementation
+        st.image(annotate_image(image), caption="Labelled Image", use_column_width=True)
 
 if __name__ == "__main__":
     main()
