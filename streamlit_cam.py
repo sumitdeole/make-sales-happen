@@ -82,9 +82,9 @@ def annotate_image(image):
 
                     # Calculate label position inside the bounding box
                     font = ImageFont.load_default()  # Load default font
-                    dummy_image = Image.new("RGB", (100, 100))  # Create a dummy image
-                    dummy_draw = ImageDraw.Draw(dummy_image)
-                    label_width, label_height = dummy_draw.textsize(label_text, font=font)
+                    label_bbox = detr_draw.textbbox((0, 0), label_text, font=font)
+                    label_width = label_bbox[2] - label_bbox[0]
+                    label_height = label_bbox[3] - label_bbox[1]
                     label_x = x_min + (x_max - x_min - label_width) // 2
                     label_y = y_max - label_height - 5  # Place the label just above the bottom of the bounding box
 
@@ -94,7 +94,6 @@ def annotate_image(image):
             st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
-
 
 
 def annotate_video(uploaded_video):
