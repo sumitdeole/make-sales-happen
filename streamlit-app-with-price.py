@@ -245,19 +245,26 @@ def main():
             st.write("Webcam Feed:")
             st.image(webrtc_ctx.video_transformer.frame_out, channels="BGR", use_column_width=True)
     elif upload_type == "Image":
-        uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
-        if uploaded_image is not None:
-            image = Image.open(uploaded_image)
-            st.image(image, caption="Uploaded Image", use_column_width=True)
+        col1, col2, col3 = st.columns([1, 1, 2])
 
-            if st.button("Annotate"):
-                annotate_image(image)
-                st.image(image, caption="Annotated Image", use_column_width=True)
+        with col1:
+            uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+            if uploaded_image is not None:
+                image = Image.open(uploaded_image)
+                st.image(image, caption="Uploaded Image", use_column_width=True)
+
+                if st.button("Annotate"):
+                    annotate_image(image)
+                    st.image(image, caption="Annotated Image", use_column_width=True)
+
     elif upload_type == "Video":
-        uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
-        if uploaded_video is not None:
-            # Process the uploaded video
-            annotate_video(uploaded_video)
+        col1, col2, col3 = st.columns([1, 1, 2])
+
+        with col1:
+            uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+            if uploaded_video is not None:
+                # Process the uploaded video
+                annotate_video(uploaded_video)
 
 if __name__ == "__main__":
     main()
