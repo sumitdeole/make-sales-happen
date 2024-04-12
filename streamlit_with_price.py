@@ -114,26 +114,24 @@ def annotate_image(image):
                 logo_results = logo_model.predict(person_image, conf=logo_detection_threshold)
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
 
-                # Construct the label text with price search
+                # Construct the label text
                 label_text = ""
-                unique_combinations = set()  # Set to store unique combinations
+                unique_combinations = set()
                 for product_label, logo_label in zip(product_labels, logo_labels):
                     combination = (logo_label, product_label)
                     if combination not in unique_combinations:
+                        label_text += f"Wearing {logo_label} {product_label}\n"
                         unique_combinations.add(combination)
-                        price = search_product_price(logo_label, product_label)
-                        if price is not None:
-                            label_text += f"{product_label} ({logo_label} of {price})\n"
 
                 if label_text:
                     # Draw the bounding box
                     detr_draw.rectangle(box, outline="blue", width=2)
 
-                    # Calculate label position in the top left corner
+                    # Calculate label position inside the bounding box (top left corner)
                     font = ImageFont.load_default()  # Load default font
-                    label_width, label_height = detr_draw.multiline_textsize(label_text, font=font)
-                    label_x = x_min
-                    label_y = y_min
+                    label_width, label_height = font.getsize_multiline(label_text)
+                    label_x = x_min + 5  # Offset from the left
+                    label_y = y_min + 5  # Offset from the top
 
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
