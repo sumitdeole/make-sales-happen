@@ -52,7 +52,7 @@ def annotate_image(image):
             logo_model = YOLO(logo_weight_file_path)
 
             # Set the detection threshold (e.g., 0.3 for 30% confidence)
-            logo_detection_threshold = 0.3
+            logo_detection_threshold = 0.4
 
             # Draw bounding boxes and labels for persons on the image
             for person_id, box in person_boxes.items():
