@@ -129,24 +129,13 @@ def annotate_image(image):
                             label_text += f"{product_label} ({logo_label} of {price})\n"
 
                 if label_text:
-                    # Draw the bounding box
-                    detr_draw.rectangle(box, outline="blue", width=2)
-
                     # Calculate label position inside the bounding box (top left corner)
                     font = ImageFont.load_default() # Load default font
                     label_bbox = detr_draw.textbbox((0, 0), label_text, font=font)
                     label_width = label_bbox[2] - label_bbox[0]
                     label_height = label_bbox[3] - label_bbox[1]
-                    label_x = x_min + 5 # Offset from the left
-                    label_y = y_min + 5 # Offset from the top
-
-                    # Check if the label would be outside the image
-                    if label_x + label_width > image.width or label_y + label_height > image.height:
-                        # Adjust label position to be outside the image
-                        label_x = min(label_x, image.width - label_width)
-                        label_y = min(label_y, image.height - label_height)
-
-                    # Draw the label
+                    label_x = x_min
+                    label_y = y_max + 10  # Offset from the bottom of the bounding box
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
         else:
             st.warning("No person detected in the image.")
