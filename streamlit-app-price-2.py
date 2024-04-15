@@ -137,7 +137,7 @@ def annotate_image(image):
                     return image, label_text # Return the annotated image and label_text
         else:
             st.warning("No person detected in the image.")
-            return None, None # Return None for both annotated_image and label_text
+            return image, "" # Return both image and empty label_text
     except Exception as e:
         st.error(f"Error processing image: {e}")
 
