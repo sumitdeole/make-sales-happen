@@ -13,8 +13,8 @@ weights_folder = "weights/"
 
 # RapidAPI headers
 headers = {
-    "X-RapidAPI-Key": "4019769c6cmsh0245f46f03d9fecp161a69jsn69acf0a47cdf",
-    "X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com"
+	"X-RapidAPI-Key": "1fbc7b11b6mshe2ac4c1d9908c8ep1b812bjsn948237c6e263",
+	"X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com"
 }
 
 def search_product_price(brand, product_type, country="us", language="en"):
