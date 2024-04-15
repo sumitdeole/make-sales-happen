@@ -136,7 +136,7 @@ def annotate_image(image):
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
                     return image, label_text # Return the annotated image and label_text
         else:
-            st.warning("No person detected in the image.")
+            # st.warning("No person detected in the image.")
             return image, "" # Return both image and empty label_text
     except Exception as e:
         st.error(f"Error processing image: {e}")
@@ -210,8 +210,8 @@ def main():
 
             if st.button("Annotate"):
                 annotated_image, label_text = annotate_image(image)
-                st.image(annotated_image, caption="Annotated Image", use_column_width=True)
                 if label_text: # Check if label_text is not empty
+                    st.image(annotated_image, caption="Annotated Image", use_column_width=True)
                     st.text(label_text) # Display the label_text
                 elif not st.session_state.warning_displayed: # Check if the warning has not been displayed
                     st.warning("No person detected in the image.")
