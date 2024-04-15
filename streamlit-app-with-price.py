@@ -66,8 +66,6 @@ def search_product_price(brand, product_type, country="us", language="en"):
     return None
 
 def annotate_image(image):
-    annotated_image = None
-    label_text = ""
     try:
         # Load DETR model and processor for person detection
         detr_processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50", revision="no_timm")
@@ -120,6 +118,7 @@ def annotate_image(image):
                 logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
 
                 # Construct the label text with price search
+                label_text = ""
                 unique_combinations = set() # Set to store unique combinations
                 for product_label, logo_label in zip(product_labels, logo_labels):
                     combination = (logo_label, product_label)
@@ -149,11 +148,10 @@ def annotate_image(image):
 
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
-            annotated_image = image
+        else:
+            st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
-    return annotated_image, label_text
-
 
 def annotate_video(uploaded_video):
     try:
@@ -238,7 +236,6 @@ def get_bbox_for_label(label):
     y2 = 150
     return x1, y1, x2, y2
 
-
 def main():
     st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
 
@@ -260,12 +257,10 @@ def main():
                 st.image(image, caption="Uploaded Image", use_column_width=True)
                 if st.button("Annotate"):
                     # Annotate the image
-                    annotated_image, label_text = annotate_image(image)
+                    annotate_image(image)
                     # Display the annotated image in the right column
                     with right_col:
-                        if annotated_image is not None:
-                            st.image(annotated_image, caption="Annotated Image", use_column_width=True)
-                            st.write(label_text)
+                        st.image(image, caption="Annotated Image", use_column_width=True)
 
         elif upload_type == "Video":
             uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
