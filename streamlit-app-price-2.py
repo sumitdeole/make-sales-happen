@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_webrtc import VideoProcessorBase, webrtc_streamer, VideoTransformerBase
 from transformers import DetrImageProcessor, DetrForObjectDetection
 from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
