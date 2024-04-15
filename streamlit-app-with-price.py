@@ -154,7 +154,10 @@ def annotate_image(image):
         st.error(f"Error processing image: {e}")
     return annotated_image, label_text
 
+
 def annotate_video(uploaded_video):
+    annotated_snapshots = []
+    label_texts = []
     try:
         # Save the uploaded video to a temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
@@ -177,7 +180,9 @@ def annotate_video(uploaded_video):
             return
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image1 = Image.fromarray(frame)
-        annotate_image(image1)
+        annotated_image1, label_text1 = annotate_image(image1)
+        annotated_snapshots.append(annotated_image1)
+        label_texts.append(label_text1)
 
         video.set(cv2.CAP_PROP_POS_MSEC, 2000)
         ret, frame = video.read()
@@ -186,17 +191,22 @@ def annotate_video(uploaded_video):
             return
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image2 = Image.fromarray(frame)
-        annotate_image(image2)
+        annotated_image2, label_text2 = annotate_image(image2)
+        annotated_snapshots.append(annotated_image2)
+        label_texts.append(label_text2)
 
-        # Display the uploaded video and the annotated snapshots
-        st.video(temp_file_path)
-        # st.image(image1, caption="Annotated Snapshot at 0 seconds", use_column_width=True)
-        st.image(image2, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
+        # Display the annotated snapshots
+        for annotated_image, label_text in zip(annotated_snapshots, label_texts):
+            if annotated_image is not None:
+                st.image(annotated_image, caption="Annotated Snapshot", use_column_width=True)
+                st.subheader("Label Text")
+                st.text(label_text)
 
         # Release the video capture
         video.release()
     except Exception as e:
         st.error(f"Error processing video: {e}")
+
 
 # Define the WebcamProcessor class
 class WebcamProcessor(VideoProcessorBase):
