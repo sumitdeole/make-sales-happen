@@ -2,12 +2,10 @@ import streamlit as st
 from transformers import DetrImageProcessor, DetrForObjectDetection
 from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
-from io import BytesIO
 import cv2
 import torch
-import numpy as np
 import tempfile
-import time
+import requests
 
 
 # Define the weights folder
