@@ -208,6 +208,8 @@ def main():
                 annotated_image, label_text = annotate_image(image)
                 if annotated_image is not None: # Check if annotated_image is not None
                     st.image(annotated_image, caption="Annotated Image", use_column_width=True)
+                    if label_text: # Check if label_text is not empty
+                        st.text(label_text) # Display the label_text
 
     elif upload_type == "Video":
         uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
