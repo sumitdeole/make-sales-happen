@@ -204,7 +204,7 @@ def main():
             st.image(image, caption="Uploaded Image", use_column_width=True)
 
             if st.button("Annotate"):
-                annotated_image, label_text = annotate_image(image)
+                annotated_image = annotate_image(image)
                 if annotated_image is not None: # Check if annotated_image is not None
                     st.image(annotated_image, caption="Annotated Image", use_column_width=True)
 
