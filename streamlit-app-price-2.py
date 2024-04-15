@@ -6,14 +6,14 @@ import cv2
 import torch
 import tempfile
 import requests
-
+import API_keys
 
 # Define the weights folder
 weights_folder = "weights/"
 
 # RapidAPI headers
 headers = {
-	"X-RapidAPI-Key": "1fbc7b11b6mshe2ac4c1d9908c8ep1b812bjsn948237c6e263",
+	"X-RapidAPI-Key": API_keys.RapidAPI,
 	"X-RapidAPI-Host": "real-time-product-search.p.rapidapi.com"
 }
 
