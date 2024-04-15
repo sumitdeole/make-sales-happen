@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_webrtc import VideoProcessorBase, webrtc_streamer
 from transformers import DetrImageProcessor, DetrForObjectDetection
 from PIL import Image, ImageDraw, ImageFont
 from ultralytics import YOLO
@@ -7,7 +6,6 @@ import cv2
 import torch
 import tempfile
 import requests
-import numpy as np
 
 
 # Define the weights folder
@@ -208,8 +206,7 @@ def main():
 
     if use_webcam:
         if st.button("Capture Frame"):
-            # Show the webcam feed with product type and logo detection
-            # webrtc_streamer(key="webcam", video_processor_factory=WebcamProcessor)
+            # (existing webcam code)
             pass
         
     elif upload_type == "Image":
