@@ -104,8 +104,8 @@ def annotate_image(image):
             logo_weight_file_path = "./weights/best_obj_detect_logos.pt" # Update with actual path
             logo_model = YOLO(logo_weight_file_path)
 
-            # Set the detection threshold (e.g., 0.4 for 40% confidence)
-            logo_detection_threshold = 0.4
+            # Set the detection threshold (e.g., 0.5 for 50% confidence)
+            logo_detection_threshold = 0.5
 
             # Draw bounding boxes and labels for persons on the image
             for person_id, box in person_boxes.items():
@@ -221,8 +221,8 @@ class WebcamProcessor(VideoProcessorBase):
         product_results = product_model.predict(img)
         product_labels = [product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
 
-        # Set the detection threshold (e.g., 0.4 for 40% confidence)
-        logo_detection_threshold = 0.4
+        # Set the detection threshold (e.g., 0.4 for 50% confidence)
+        logo_detection_threshold = 0.5
             
         # Detect logos using the YOLO model
         logo_results = logo_model.predict(img, conf=logo_detection_threshold)
