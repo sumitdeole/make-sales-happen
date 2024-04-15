@@ -7,6 +7,7 @@ import cv2
 import torch
 import tempfile
 import requests
+import numpy as np
 
 
 # Define the weights folder
