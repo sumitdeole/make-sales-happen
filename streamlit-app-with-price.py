@@ -80,7 +80,7 @@ def annotate_image(image):
 
         # Convert outputs to COCO API for person detection
         detr_target_sizes = torch.tensor([image.size[::-1]])
-        detr_results = detr_processor.post_process_object_detection(detr_outputs, target_sizes=detr_target_sizes, threshold=0.6)[0]
+        detr_results = detr_processor.post_process_object_detection(detr_outputs, target_sizes=detr_target_sizes, threshold=0.8)[0]
 
         # Check if a person is detected in the image
         person_detected = any(detr_model.config.id2label[label.item()] == "person" for label in detr_results["labels"])
@@ -105,7 +105,7 @@ def annotate_image(image):
             logo_model = YOLO(logo_weight_file_path)
 
             # Set the detection threshold (e.g., 0.6 for 60% confidence)
-            logo_detection_threshold = 0.6
+            logo_detection_threshold = 0.8
 
             # Draw bounding boxes and labels for persons on the image
             for person_id, box in person_boxes.items():
