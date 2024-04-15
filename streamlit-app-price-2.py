@@ -7,7 +7,6 @@ import cv2
 import torch
 import tempfile
 import requests
-import numpy as np
 
 
 # Define the weights folder
@@ -227,27 +226,16 @@ class WebcamProcessor(VideoProcessorBase):
         return img
     
 
-# Inject the CSS file into the app
-st.markdown(
-    """
-    <style>
-    @import url('https://github.com/sumitdeole/make-sales-happen/blob/main/style.css');
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 def main():
     st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
 
     use_webcam = st.checkbox("Use Webcam")
     upload_type = st.radio("Upload Type", ["Image", "Video"])
 
-
     # Initialize session state for the warning
     if "warning_displayed" not in st.session_state:
         st.session_state.warning_displayed = False
-        
+
     if use_webcam:
         if st.button("Capture Frame"):
             # Show the webcam feed with product type and logo detection
