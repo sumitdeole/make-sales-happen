@@ -13,6 +13,7 @@ from streamlit_webrtc import VideoProcessorBase, webrtc_streamer, VideoTransform
 import cvzone
 import math
 from io import BytesIO
+from streamlit_webrtc import VideoProcessorBase, webrtc_streamer
 
 
 # Define the weights folder
@@ -196,6 +197,35 @@ def annotate_video(uploaded_video):
     except Exception as e:
         st.error(f"Error processing video: {e}")
 
+# Define the WebcamProcessor class
+class WebcamProcessor(VideoProcessorBase):
+    def __init__(self):
+        self.frame_out = None
+
+    def recv(self, img: np.ndarray) -> np.ndarray:
+        # Detect product types using the YOLO model
+        product_results = product_model.predict(img)
+        product_labels = [product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
+
+        # Detect logos using the YOLO model
+        logo_results = logo_model.predict(img, conf=0.4)
+        logo_labels = [logo_model.names[int(obj.cls[0])] for obj in logo_results[0].boxes]
+
+        # Annotate the webcam feed with detected product types and logos
+        for label in product_labels:
+            bbox = get_bbox_for_label(label)
+            x1, y1, x2, y2 = bbox
+            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
+            cvzone.putTextRect(img, label, (max(0, x1), max(35, y1)), scale=1, thickness=1)
+
+        for label in logo_labels:
+            bbox = get_bbox_for_label(label)
+            x1, y1, x2, y2 = bbox
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
+            cvzone.putTextRect(img, label, (max(0, x1), max(35, y1)), scale=1, thickness=1)
+
+        return img
+    
 def get_bbox_for_label(label):
     # Implement your logic to get the bounding box for the given label
     # This could involve using the YOLO model predictions or any other object detection method
@@ -206,25 +236,6 @@ def get_bbox_for_label(label):
     y2 = 150
     return x1, y1, x2, y2
 
-class WebcamProcessor(VideoProcessorBase):
-    # Unfortunately, Streamlit shareable web app does not allow webcam access
-    def __init__(self):
-        self.frame_out = None
-
-    def recv(self, img: np.ndarray) -> np.ndarray:
-        # Detect product types using the YOLO model
-        product_results = product_model.predict(img)
-        product_labels = [product_model.names[int(obj.cls[0])] for obj in product_results[0].boxes]
-
-        # Annotate the webcam feed with detected product types
-        for label in product_labels:
-            bbox = get_bbox_for_label(label)
-            x1, y1, x2, y2 = bbox
-            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
-            cvzone.putTextRect(img, label, (max(0, x1), max(35, y1)), scale=1, thickness=1)
-        return img
-
-
 def main():
     st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
 
@@ -232,15 +243,18 @@ def main():
     left_col, right_col = st.columns([3, 3])
 
     with left_col:
-        # Browse and Selection Image/Video
-        upload_type = st.radio("Upload Type", ["Image", "Video"])
+        # Browse and Selection
+        upload_type = st.radio("Upload Type", ["Webcam", "Image", "Video"])
 
-        if upload_type == "Image":
+        if upload_type == "Webcam":
+            # Show the webcam feed with product type and logo detection
+            webrtc_streamer(key="webcam", video_processor_factory=WebcamProcessor)
+
+        elif upload_type == "Image":
             uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
             if uploaded_image is not None:
                 image = Image.open(uploaded_image)
                 st.image(image, caption="Uploaded Image", use_column_width=True)
-
                 if st.button("Annotate"):
                     # Annotate the image
                     annotate_image(image)
@@ -253,6 +267,6 @@ def main():
             if uploaded_video is not None:
                 # Process the uploaded video
                 annotate_video(uploaded_video)
-
+                
 if __name__ == "__main__":
     main()
