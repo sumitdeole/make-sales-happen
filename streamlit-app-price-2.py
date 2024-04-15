@@ -134,6 +134,7 @@ def annotate_image(image):
 
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
+                    return image, label_text # Return the annotated image and label_text
         else:
             st.warning("No person detected in the image.")
             return None # Return None for both annotated_image and label_text
@@ -204,7 +205,7 @@ def main():
             st.image(image, caption="Uploaded Image", use_column_width=True)
 
             if st.button("Annotate"):
-                annotated_image = annotate_image(image)
+                annotated_image, label_text = annotate_image(image)
                 if annotated_image is not None: # Check if annotated_image is not None
                     st.image(annotated_image, caption="Annotated Image", use_column_width=True)
 
