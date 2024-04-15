@@ -151,6 +151,8 @@ def annotate_image(image):
                     # Draw the label
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
             annotated_image = image
+        else:
+            st.warning("No person detected in the image.")
     except Exception as e:
         st.error(f"Error processing image: {e}")
     return annotated_image, label_text
