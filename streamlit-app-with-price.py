@@ -149,11 +149,8 @@ def annotate_image(image):
                     detr_draw.multiline_text((label_x, label_y), label_text, font=font, fill="blue")
         else:
             st.warning("No person detected in the image.")
-            
-        return image  # Return the annotated image
     except Exception as e:
         st.error(f"Error processing image: {e}")
-
 
 def annotate_video(uploaded_video):
     try:
@@ -178,8 +175,7 @@ def annotate_video(uploaded_video):
             return
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image1 = Image.fromarray(frame)
-        image1 = annotate_image(image1)  # Annotate the image
-        st.image(image1, caption="Annotated Snapshot at 0 seconds", use_column_width=True)
+        annotate_image(image1)
 
         video.set(cv2.CAP_PROP_POS_MSEC, 2000)
         ret, frame = video.read()
@@ -188,17 +184,17 @@ def annotate_video(uploaded_video):
             return
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image2 = Image.fromarray(frame)
-        image2 = annotate_image(image2)  # Annotate the image
-        st.image(image2, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
+        annotate_image(image2)
 
-        # Display the uploaded video
+        # Display the uploaded video and the annotated snapshots
         st.video(temp_file_path)
+        # st.image(image1, caption="Annotated Snapshot at 0 seconds", use_column_width=True)
+        st.image(image2, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
 
         # Release the video capture
         video.release()
     except Exception as e:
         st.error(f"Error processing video: {e}")
-
 
 def get_bbox_for_label(label):
     # Implement your logic to get the bounding box for the given label
@@ -248,6 +244,9 @@ def main():
                 if st.button("Annotate"):
                     # Annotate the image
                     annotate_image(image)
+                    # Display the annotated image in the right column
+                    with right_col:
+                        st.image(image, caption="Annotated Image", use_column_width=True)
 
         elif upload_type == "Video":
             uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
