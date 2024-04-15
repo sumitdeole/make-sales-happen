@@ -285,8 +285,12 @@ def main():
         elif upload_type == "Video":
             uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
             if uploaded_video is not None:
-                # Process the uploaded video
-                annotate_video(uploaded_video)
+                # Display the uploaded video
+                st.video(uploaded_video)
+                if st.button("Annotate"):
+                    # Process the uploaded video
+                    annotate_video(uploaded_video)
+
                 
 if __name__ == "__main__":
     main()
