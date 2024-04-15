@@ -175,24 +175,17 @@ def annotate_video(uploaded_video):
             return
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image2 = Image.fromarray(frame)
-        
-        # After processing the video and annotating the image
-        annotated_image, label_text = annotate_image(image2)
-        
-        # Display the uploaded video and the annotated snapshot
+        annotate_image(image2)
+
+        # Display the uploaded video and the annotated snapshots
         st.video(temp_file_path)
-        st.image(annotated_image, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
-        
-        # Display the label_text if it's not empty
-        if label_text:
-            st.text(label_text) # Display the label_text
-        
+        # st.image(image1, caption="Annotated Snapshot at 0 seconds", use_column_width=True)
+        st.image(image2, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
+
         # Release the video capture
         video.release()
     except Exception as e:
         st.error(f"Error processing video: {e}")
-
-
 
 def main():
     st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
@@ -221,7 +214,7 @@ def main():
                     st.image(annotated_image, caption="Annotated Image", use_column_width=True)
                     st.text(label_text) # Display the label_text
                 elif not st.session_state.warning_displayed: # Check if the warning has not been displayed
-                    # st.warning("No person detected in the image.")
+                    st.warning("No person detected in the image.")
                     st.session_state.warning_displayed = True # Mark the warning as displayed
 
     elif upload_type == "Video":
