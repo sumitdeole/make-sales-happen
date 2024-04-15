@@ -210,8 +210,8 @@ def main():
 
             if st.button("Annotate"):
                 annotated_image, label_text = annotate_image(image)
+                st.image(annotated_image, caption="Annotated Image", use_column_width=True)
                 if label_text: # Check if label_text is not empty
-                    st.image(annotated_image, caption="Annotated Image", use_column_width=True)
                     st.text(label_text) # Display the label_text
                 elif not st.session_state.warning_displayed: # Check if the warning has not been displayed
                     st.warning("No person detected in the image.")
