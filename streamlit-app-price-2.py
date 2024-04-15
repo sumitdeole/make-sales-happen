@@ -196,6 +196,7 @@ def main():
         if st.button("Capture Frame"):
             # (existing webcam code)
             pass
+        
     elif upload_type == "Image":
         uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
         if uploaded_image is not None:
@@ -203,8 +204,10 @@ def main():
             st.image(image, caption="Uploaded Image", use_column_width=True)
 
             if st.button("Annotate"):
-                annotate_image(image)
-                st.image(image, caption="Annotated Image", use_column_width=True)
+                annotated_image, label_text = annotate_image(image)
+                if annotated_image is not None: # Check if annotated_image is not None
+                    st.image(annotated_image, caption="Annotated Image", use_column_width=True)
+
     elif upload_type == "Video":
         uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
         if uploaded_video is not None:
