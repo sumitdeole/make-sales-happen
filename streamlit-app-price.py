@@ -213,28 +213,28 @@ def main():
 
     # Uploaded image/video
     with col2:
-        if uploaded_file is not None:
-            if upload_type == "Image":
-                image = Image.open(uploaded_file)
-                st.image(image, caption="Uploaded Image", use_column_width=True)
-            elif upload_type == "Video":
-                st.video(uploaded_file)
+        if uploaded_file is not None and upload_type == "Image":
+            image = Image.open(uploaded_file)
+            st.image(image, caption="Uploaded Image", use_column_width=True)
+        elif uploaded_file is not None and upload_type == "Video":
+            st.video(uploaded_file)
 
-    # Annotate button
+    # Annotate button and label
     with col3:
         st.write("")  # Placeholder to align widgets
         if st.button("Annotate"):
+            label_text = ""
+            annotated_image = None
             if uploaded_file is not None:
                 if upload_type == "Image":
                     annotated_image, label_text = annotate_image(image)
-                    if label_text:
-                        # Resize annotated image to match the uploaded image size
-                        annotated_image = annotated_image.resize(image.size)
-                        # Display the annotated image in column 4
-                        col4.image(annotated_image, caption="Annotated Image", use_column_width=True)
-                        st.text(label_text)
                 elif upload_type == "Video":
                     annotate_video(uploaded_file)
+
+            if annotated_image is not None:
+                col4.image(annotated_image, caption="Annotated Image", use_column_width=True)
+        st.write("")  # Placeholder for label alignment
+        st.text(label_text)  # Display label text
 
     # Placeholder for annotated image
     with col4:
