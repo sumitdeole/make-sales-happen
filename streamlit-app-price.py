@@ -240,3 +240,7 @@ def main():
                     st.text(label_text)
         elif upload_type == "Video" and uploaded_video:
             annotate_video(uploaded_video)
+
+
+if __name__ == "__main__":
+    main()
