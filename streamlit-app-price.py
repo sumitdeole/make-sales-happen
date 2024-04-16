@@ -197,6 +197,8 @@ def main():
     st.title("Make Sales Happen")
     st.markdown("## Offline Retailer Sales Targeting App")
 
+    label_text = ""  # Initialize label_text with an empty string
+
     # Create a grid layout with 1 row and 4 columns
     col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
 
@@ -223,7 +225,6 @@ def main():
     with col3:
         st.write("")  # Placeholder to align widgets
         if st.button("Annotate"):
-            label_text = ""
             annotated_image = None
             if uploaded_file is not None:
                 if upload_type == "Image":
@@ -233,12 +234,13 @@ def main():
 
             if annotated_image is not None:
                 col4.image(annotated_image, caption="Annotated Image", use_column_width=True)
-        st.write("")  # Placeholder for label alignment
-        st.text(label_text)  # Display label text
 
     # Placeholder for annotated image
     with col4:
         st.write("")  # Placeholder to align widgets
+
+    # Display label text
+    st.text(label_text)
 
 
 
