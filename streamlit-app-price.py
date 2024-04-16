@@ -228,6 +228,8 @@ def main():
                 if upload_type == "Image":
                     annotated_image, label_text = annotate_image(image)
                     if label_text:
+                        # Resize annotated image to match the uploaded image size
+                        annotated_image = annotated_image.resize(image.size)
                         st.image(annotated_image, caption="Annotated Image", use_column_width=True)
                         st.text(label_text)
                 elif upload_type == "Video":
@@ -241,6 +243,8 @@ def main():
                 if st.button("Annotate"):
                     annotated_image, label_text = annotate_image(image)
                     if label_text:
+                        # Resize annotated image to match the uploaded image size
+                        annotated_image = annotated_image.resize(image.size)
                         st.image(annotated_image, caption="Annotated Image", use_column_width=True)
                         st.text(label_text)
             elif upload_type == "Video":
