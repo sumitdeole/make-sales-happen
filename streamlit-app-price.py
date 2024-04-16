@@ -142,7 +142,6 @@ def annotate_image(image):
         st.error(f"Error processing image: {e}")
 
 
-
 def annotate_video(uploaded_video):
     try:
         # Save the uploaded video to a temporary file
