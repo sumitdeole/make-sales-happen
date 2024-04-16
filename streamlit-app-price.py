@@ -198,47 +198,54 @@ def main():
     st.markdown("## Offline Retailer Sales Targeting App")
 
     # Create a grid layout with 1 row and 4 columns
-    col1, col2, col3, col4 = st.columns([1, 3, 1, 3])
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
 
     # Sidebar for choosing upload type
     with col1:
+        st.write("")  # Placeholder to align widgets
         use_webcam = st.checkbox("Use Webcam")
         upload_type = st.radio("Upload Type", ["Image", "Video"])
 
+        if upload_type == "Image":
+            uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+        elif upload_type == "Video":
+            uploaded_file = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+
     # Uploaded image/video
     with col2:
-        if upload_type == "Image":
-            uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
-            if uploaded_image:
-                image = Image.open(uploaded_image)
+        if uploaded_file is not None:
+            if upload_type == "Image":
+                image = Image.open(uploaded_file)
                 st.image(image, caption="Uploaded Image", use_column_width=True)
-
-        elif upload_type == "Video":
-            uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
-            if uploaded_video:
-                st.video(uploaded_video)
+            elif upload_type == "Video":
+                st.video(uploaded_file)
 
     # Annotate button
     with col3:
+        st.write("")  # Placeholder to align widgets
         if st.button("Annotate"):
-            if upload_type == "Image" and uploaded_image:
-                annotated_image, label_text = annotate_image(image)
-                if label_text:
-                    st.image(annotated_image, caption="Annotated Image", use_column_width=True)
-                    st.text(label_text)
-            elif upload_type == "Video" and uploaded_video:
-                annotate_video(uploaded_video)
+            if uploaded_file is not None:
+                if upload_type == "Image":
+                    annotated_image, label_text = annotate_image(image)
+                    if label_text:
+                        st.image(annotated_image, caption="Annotated Image", use_column_width=True)
+                        st.text(label_text)
+                elif upload_type == "Video":
+                    annotate_video(uploaded_file)
 
     # Annotated image
     with col4:
-        if upload_type == "Image" and uploaded_image:
-            if st.button("Annotate"):
-                annotated_image, label_text = annotate_image(image)
-                if label_text:
-                    st.image(annotated_image, caption="Annotated Image", use_column_width=True)
-                    st.text(label_text)
-        elif upload_type == "Video" and uploaded_video:
-            annotate_video(uploaded_video)
+        st.write("")  # Placeholder to align widgets
+        if uploaded_file is not None:
+            if upload_type == "Image":
+                if st.button("Annotate"):
+                    annotated_image, label_text = annotate_image(image)
+                    if label_text:
+                        st.image(annotated_image, caption="Annotated Image", use_column_width=True)
+                        st.text(label_text)
+            elif upload_type == "Video":
+                annotate_video(uploaded_file)
+
 
 
 if __name__ == "__main__":
