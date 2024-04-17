@@ -149,8 +149,12 @@ def annotate_video(uploaded_video):
             temp_file.write(uploaded_video.read())
             temp_file_path = temp_file.name
 
-        # Load the video
-        video = cv2.VideoCapture(temp_file_path)
+        # Convert the video to H.264 codec using FFmpeg
+        converted_video_path = "converted_video.mp4"
+        os.system(f"ffmpeg -i {temp_file_path} -vcodec libx264 {converted_video_path}")
+
+        # Load the converted video
+        video = cv2.VideoCapture(converted_video_path)
 
         # Get the video properties
         fps = video.get(cv2.CAP_PROP_FPS)
@@ -194,8 +198,8 @@ def annotate_video(uploaded_video):
 
 
 def main():
-    st.title("Make Sales Happen")
-    st.markdown("## Offline Retailer Sales Targeting App")
+    st.title("Make Sales Happen: Offline Sales Targeting App")
+    # st.markdown("## Offline Retailer Sales Targeting App")
 
     label_text = ""  # Initialize label_text with an empty string
 
