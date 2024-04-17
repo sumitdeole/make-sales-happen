@@ -218,8 +218,6 @@ def main():
         if uploaded_file is not None and upload_type == "Image":
             image = Image.open(uploaded_file)
             st.image(image, caption="Uploaded Image", use_column_width=True)
-        elif uploaded_file is not None and upload_type == "Video":
-            st.video(uploaded_file)
 
     # Annotate button and label
     with col3:
@@ -229,20 +227,24 @@ def main():
             if uploaded_file is not None:
                 if upload_type == "Image":
                     annotated_image, label_text = annotate_image(image)
+                    if "No person detected in the image" in label_text:
+                        uploaded_file = None
                 elif upload_type == "Video":
                     annotate_video(uploaded_file)
 
             if annotated_image is not None:
                 col4.image(annotated_image, caption="Annotated Image", use_column_width=True)
 
+                # Display label text below annotated image
+                st.text(label_text)
+
     # Placeholder for annotated image
     with col4:
         st.write("")  # Placeholder to align widgets
 
-    # Display label text
-    st.text(label_text)
-
-
+    # Display uploaded video for video type
+    if uploaded_file is not None and upload_type == "Video":
+        st.video(uploaded_file)
 
 if __name__ == "__main__":
     main()
