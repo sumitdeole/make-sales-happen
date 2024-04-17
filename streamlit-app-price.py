@@ -230,21 +230,25 @@ def main():
                     if "No person detected in the image" in label_text:
                         uploaded_file = None
                 elif upload_type == "Video":
-                    annotate_video(uploaded_file)
+                    annotated_video, label_text = annotate_video(uploaded_file)
 
             if annotated_image is not None:
                 col4.image(annotated_image, caption="Annotated Image", use_column_width=True)
 
                 # Display label text below annotated image
-                st.text(label_text)
+                if label_text:
+                    st.text(label_text)
 
     # Placeholder for annotated image
     with col4:
         st.write("")  # Placeholder to align widgets
 
-    # Display uploaded video for video type
+    # Display annotated video for video type
     if uploaded_file is not None and upload_type == "Video":
-        st.video(uploaded_file)
+        if annotated_video is not None:
+            video_container = st.container()
+            with video_container:
+                st.video(annotated_video, width=400)
 
 if __name__ == "__main__":
     main()
