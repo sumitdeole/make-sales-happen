@@ -213,42 +213,36 @@ def main():
         elif upload_type == "Video":
             uploaded_file = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
 
-    # Uploaded image/video
+    # Inside the main() function, adjust the uploaded image/video section
     with col2:
         if uploaded_file is not None and upload_type == "Image":
             image = Image.open(uploaded_file)
             st.image(image, caption="Uploaded Image", use_column_width=True)
+        elif uploaded_file is not None and upload_type == "Video":
+            # Removed st.video(uploaded_file) here
+            pass
 
-    # Annotate button and label
+
+    # Inside the main() function, adjust the annotate button and label section
     with col3:
-        st.write("")  # Placeholder to align widgets
+        st.write("") # Placeholder to align widgets
         if st.button("Annotate"):
             annotated_image = None
             if uploaded_file is not None:
                 if upload_type == "Image":
                     annotated_image, label_text = annotate_image(image)
-                    if "No person detected in the image" in label_text:
-                        uploaded_file = None
                 elif upload_type == "Video":
-                    annotated_video, label_text = annotate_video(uploaded_file)
+                    annotate_video(uploaded_file)
 
-            if annotated_image is not None:
+            if annotated_image is not None and label_text: # Check if label_text is not empty
                 col4.image(annotated_image, caption="Annotated Image", use_column_width=True)
 
-                # Display label text below annotated image
-                if label_text:
-                    st.text(label_text)
-
-    # Placeholder for annotated image
+    # Move the label_text display inside the col4 block
     with col4:
-        st.write("")  # Placeholder to align widgets
+        st.write("") # Placeholder to align widgets
+        if label_text: # Check if label_text is not empty
+            st.text(label_text)
 
-    # Display annotated video for video type
-    if uploaded_file is not None and upload_type == "Video":
-        if annotated_video is not None:
-            video_container = st.container()
-            with video_container:
-                st.video(annotated_video, width=400)
 
 if __name__ == "__main__":
     main()
