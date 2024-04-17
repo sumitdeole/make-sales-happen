@@ -143,6 +143,11 @@ def annotate_image(image):
         st.error(f"Error processing image: {e}")
 
 
+import cv2
+import tempfile
+from PIL import Image
+import streamlit as st
+
 def annotate_video(uploaded_video):
     try:
         # Save the uploaded video to a temporary file
