@@ -150,12 +150,13 @@ def annotate_video(uploaded_video):
             temp_file.write(uploaded_video.read())
             temp_file_path = temp_file.name
 
-        # Convert the video to H.264 codec using FFmpeg
-        converted_video_path = "converted_video.mp4"
-        os.system(f"ffmpeg -i {temp_file_path} -vcodec libx264 {converted_video_path}")
+        # Load the video
+        video = cv2.VideoCapture(temp_file_path)
 
-        # Load the converted video
-        video = cv2.VideoCapture(converted_video_path)
+        # Check if the video was loaded successfully
+        if not video.isOpened():
+            st.error("Error reading the video file.")
+            return
 
         # Get the video properties
         fps = video.get(cv2.CAP_PROP_FPS)
@@ -224,8 +225,9 @@ def main():
             image = Image.open(uploaded_file)
             st.image(image, caption="Uploaded Image", use_column_width=True)
         elif uploaded_file is not None and upload_type == "Video":
-            # Removed st.video(uploaded_file) here
-            pass
+            # Display the uploaded video
+            video_bytes = uploaded_file.read()
+            st.video(video_bytes)
 
 
     # Inside the main() function, adjust the annotate button and label section
