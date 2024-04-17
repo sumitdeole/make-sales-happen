@@ -195,7 +195,7 @@ def annotate_video(uploaded_video):
 
 
 def main():
-    st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
+    st.title("'Make Sales Happen' app: Targeting offline sales in real-time")
 
     use_webcam = st.checkbox("Use Webcam")
     upload_type = st.radio("Upload Type", ["Image", "Video"])
