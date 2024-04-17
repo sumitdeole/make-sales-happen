@@ -143,10 +143,6 @@ def annotate_image(image):
         st.error(f"Error processing image: {e}")
 
 
-import cv2
-import tempfile
-from PIL import Image
-import streamlit as st
 
 def annotate_video(uploaded_video):
     try:
@@ -158,103 +154,75 @@ def annotate_video(uploaded_video):
         # Load the video
         video = cv2.VideoCapture(temp_file_path)
 
-        # Check if the video was loaded successfully
-        if not video.isOpened():
-            st.error("Error reading the video file.")
-            return
-
         # Get the video properties
         fps = video.get(cv2.CAP_PROP_FPS)
         width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-        # Take snapshots at 0 seconds and 2 seconds
-        video.set(cv2.CAP_PROP_POS_MSEC, 0)
-        ret, frame = video.read()
-        if not ret:
-            st.error("Error reading the video file.")
-            return
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        image1 = Image.fromarray(frame)
-        annotate_image(image1)
+        # Process each frame of the video
+        annotated_frames = []
+        while True:
+            ret, frame = video.read()
+            if not ret:
+                break
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image = Image.fromarray(frame)
+            annotated_image, label_text = annotate_image(image)
+            if label_text:
+                annotated_frames.append((annotated_image, label_text))
 
-        video.set(cv2.CAP_PROP_POS_MSEC, 2000)
-        ret, frame = video.read()
-        if not ret:
-            st.error("Error reading the video file.")
-            return
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        image2 = Image.fromarray(frame)
-        
-        # After processing the video and annotating the image
-        annotated_image, label_text = annotate_image(image2)
-        
-        # Display the uploaded video and the annotated snapshot
-        st.video(temp_file_path)
-        st.image(annotated_image, caption="Annotated Snapshot at 2 seconds", use_column_width=True)
-        
-        # Display the label_text if it's not empty
-        if label_text:
-            st.text(label_text) # Display the label_text
-        
+        # Display the annotated frames
+        for idx, (annotated_image, label_text) in enumerate(annotated_frames):
+            st.image(annotated_image, caption=f"Annotated Frame {idx + 1}", use_column_width=True)
+            if label_text:
+                st.text(label_text)
+
         # Release the video capture
         video.release()
+        os.remove(temp_file_path)  # Remove the temporary video file
     except Exception as e:
         st.error(f"Error processing video: {e}")
 
-
-
 def main():
-    st.title("Make Sales Happen: Offline Sales Targeting App")
-    # st.markdown("## Offline Retailer Sales Targeting App")
+    st.title("Make Sales Happen: Offline Retailer Sales Targeting App")
 
-    label_text = ""  # Initialize label_text with an empty string
+    use_webcam = st.checkbox("Use Webcam")
+    upload_type = st.radio("Upload Type", ["Image", "Video"])
 
-    # Create a grid layout with 1 row and 4 columns
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+    # Initialize session state for the warning
+    if "warning_displayed" not in st.session_state:
+        st.session_state.warning_displayed = False
 
-    # Sidebar for choosing upload type
-    with col1:
-        st.write("")  # Placeholder to align widgets
-        use_webcam = st.checkbox("Use Webcam")
-        upload_type = st.radio("Upload Type", ["Image", "Video"])
-
-        if upload_type == "Image":
-            uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
-        elif upload_type == "Video":
-            uploaded_file = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
-
-    # Inside the main() function, adjust the uploaded image/video section
-    with col2:
-        if uploaded_file is not None and upload_type == "Image":
-            image = Image.open(uploaded_file)
+    if use_webcam:
+        if st.button("Capture Frame"):
+            # (existing webcam code)
+            pass
+        
+    elif upload_type == "Image":
+        uploaded_image = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
+        if uploaded_image is not None:
+            image = Image.open(uploaded_image)
             st.image(image, caption="Uploaded Image", use_column_width=True)
-        elif uploaded_file is not None and upload_type == "Video":
+
+            if st.button("Annotate"):
+                annotated_image, label_text = annotate_image(image)
+                if label_text: # Check if label_text is not empty
+                    st.image(annotated_image, caption="Annotated Image", use_column_width=True)
+                    st.text(label_text) # Display the label_text
+                elif not st.session_state.warning_displayed: # Check if the warning has not been displayed
+                    # st.warning("No person detected in the image.")
+                    st.session_state.warning_displayed = True # Mark the warning as displayed
+
+    elif upload_type == "Video":
+        uploaded_video = st.file_uploader("Upload Video", type=["mp4", "mov", "avi"])
+        if uploaded_video is not None:
             # Display the uploaded video
-            video_bytes = uploaded_file.read()
-            st.video(video_bytes)
-
-
-    # Inside the main() function, adjust the annotate button and label section
-    with col3:
-        st.write("") # Placeholder to align widgets
-        if st.button("Annotate"):
-            annotated_image = None
-            if uploaded_file is not None:
-                if upload_type == "Image":
-                    annotated_image, label_text = annotate_image(image)
-                elif upload_type == "Video":
-                    annotate_video(uploaded_file)
-
-            if annotated_image is not None and label_text: # Check if label_text is not empty
-                col4.image(annotated_image, caption="Annotated Image", use_column_width=True)
-
-    # Move the label_text display inside the col4 block
-    with col4:
-        st.write("") # Placeholder to align widgets
-        if label_text: # Check if label_text is not empty
-            st.text(label_text)
-
+            st.video(uploaded_video)
+            
+            # Place the "Annotate" button below the video display
+            if st.button("Annotate"):
+                # Process the uploaded video
+                annotate_video(uploaded_video)
 
 if __name__ == "__main__":
     main()
