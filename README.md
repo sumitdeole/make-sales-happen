@@ -1,1 +1,3 @@
-# Make Sales Happen: 
+# Unveiling “Make Sales Happen” App: Targeting Offline Sales in Real-Time
+After witnessing the expansion of the e-commerce sector over the last decade, I couldn’t help but empathize with the plight of offline retailers. For them, each entering customer is a mystery waiting to unfold, a black box of potential sales. Unlike their online counterparts, offline stores lack the luxury of pre-sale customer insights, often resorting to guesswork and post-sale analysis to understand their clientele. They also face labor shortages, especially of qualified salesmen, which makes it difficult to serve all customers equally well.
+[Challenges faced by offline retailers](assets/ppt_a_challenge.gif)
