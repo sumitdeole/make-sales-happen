@@ -60,3 +60,8 @@ One may wonder what if brand logos are not visible. Not all prestigious brands s
 <div style="text-align:center;">
     <img src="https://github.com/sumitdeole/make-sales-happen/raw/main/assets/Gemini.example.jpg" alt="Gemini.example.jpg">
 </div>
+
+
+---
+
+The content above is also published as a blog on medium.com ([link here](https://medium.com/@sumitdeole/unveiling-make-sales-happen-app-targeting-offline-sales-in-real-time-52f2f1dad828)).
